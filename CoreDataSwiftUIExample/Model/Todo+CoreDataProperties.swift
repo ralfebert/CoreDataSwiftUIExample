@@ -7,6 +7,7 @@ public extension Todo {
     }
 
     @NSManaged var name: String
+    @NSManaged var projects: Set<Project>
 }
 
 extension Todo: Identifiable {}

@@ -2,35 +2,35 @@ import CoreData
 import SwiftUI
 
 struct TodosView: View {
-    @FetchRequest(fetchRequest: Todo.allTodos) var todos
+    @FetchRequest(fetchRequest: Project.all) var projects: FetchedResults<Project>
     @Environment(\.managedObjectContext) var managedObjectContext
 
     var body: some View {
         NavigationView {
             List {
-                ForEach(self.todos) { todo in
-                    NavigationLink(destination: TodoView(todo: todo)) {
-                        Text(todo.name)
+                ForEach(self.projects) { (project: Project) in
+                    Section(header: Text(project.name)) {
+                        ForEach(project.todos.sorted { $0.id < $1.id }) { todo in
+                            Text(todo.name)
+                        }
                     }
                 }
-                .onDelete(perform: deleteRows)
             }
             .navigationBarTitle("Todos", displayMode: .inline)
             .navigationBarItems(trailing: addButton)
         }
     }
 
-    func deleteRows(at offsets: IndexSet) {
-        for index in offsets {
-            managedObjectContext.delete(todos[index])
-        }
-    }
-
     var addButton: some View {
         Button(
             action: {
+                let project = Project.create(in: self.managedObjectContext)
+                project.name = "Project \(Date())"
+
                 let todo = Todo.create(in: self.managedObjectContext)
                 todo.name = "Example \(Date())"
+                todo.projects = [project, try! managedObjectContext.fetch(Project.all).randomElement()!]
+
                 try! self.managedObjectContext.save()
             },
             label: {

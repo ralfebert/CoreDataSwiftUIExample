@@ -3,7 +3,7 @@ import Foundation
 
 @objc(Todo)
 public class Todo: NSManagedObject {
-    static var allTodos: NSFetchRequest<Todo> {
+    static var all: NSFetchRequest<Todo> {
         let request: NSFetchRequest<Todo> = Todo.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         return request
